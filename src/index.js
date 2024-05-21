@@ -1,8 +1,9 @@
 console.log('%c HI', 'color: firebrick')
-
+let dogsList
 const dogBreedList = document.getElementById('dog-breeds')
 const dogImages = document.getElementById('dog-image-container')
 const dropDownOptions = document.querySelectorAll('option')
+const breedDropDown = document.getElementById('breed-dropdown')
 
 const addBreedClickListener = (breed) => {
   document.getElementById(`${breed}`).addEventListener('click', () => {
@@ -25,6 +26,10 @@ const grabBreeds = () => {
   fetch("https://dog.ceo/api/breeds/list/all")
   .then(resp => resp.json())
   .then(data => {
+    dogsList = data.message
+    return data
+  })
+  .then(data => {
     Object.keys(data.message).forEach(breed => {
       const createListItem = document.createElement('li')
       createListItem.id = `${breed}`
@@ -38,15 +43,16 @@ const grabBreeds = () => {
 grabImages()
 grabBreeds()
 
-const listenerForOptions = () => {
-  dropDownOptions.forEach(option => {
-    option.addEventListener('click',() => {
-      grabBreeds()
-      
-    } )
-  })
+
+breedDropDown.onchange = () => {
+  const filteredDogsList = Object.keys(dogsList).filter(dog =>  dog.startsWith(breedDropDown.value))
+  dogBreedList.innerHTML = ''
+  filteredDogsList.forEach(breed => {
+    const createListItem = document.createElement('li')
+    createListItem.id = `${breed}`
+    dogBreedList.appendChild(createListItem).textContent = breed
+    addBreedClickListener(breed)})
 }
 
-listenerForOptions()
 
 
